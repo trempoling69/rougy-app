@@ -1,6 +1,5 @@
 import React, { useCallback, useState } from 'react';
 import * as SecureStore from 'expo-secure-store';
-import { router } from 'expo-router';
 import axios from 'axios';
 import { API_URL, get } from '../config/api';
 type Credential = { username: string; password: string };

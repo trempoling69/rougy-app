@@ -6,6 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "backgroundColor": "#ffffff",
     "scheme": "rougy-app",
     "splash": {
       "image": "./assets/splash.png",
@@ -14,7 +15,8 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "backgroundColor": "#ffffff"
     },
     "android": {
       "adaptiveIcon": {
