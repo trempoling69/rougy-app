@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { Text, Image, StyleSheet, TextInput, Pressable, View } from 'react-native';
+import { Text, Image, StyleSheet, TextInput, Pressable, View, ScrollView, KeyboardAvoidingView } from 'react-native';
 import { useAuth } from '../context/ctx';
 import { useForm, Controller } from 'react-hook-form';
 import { useEffect, useState } from 'react';
@@ -36,8 +36,9 @@ export default function SignIn() {
     }
   }, [isLoggedIn]);
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
       <Image source={require('../assets/logo.png')} style={styles.image} />
+
       <Controller
         control={control}
         rules={{
@@ -81,7 +82,7 @@ export default function SignIn() {
         <Text style={styles.btnText}>{isLoading ? 'Chargement...' : 'Se connecter'}</Text>
       </Pressable>
       {isError && <Text style={styles.error}>{errorMessage}</Text>}
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 const styles = StyleSheet.create({

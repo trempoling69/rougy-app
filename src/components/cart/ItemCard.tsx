@@ -1,42 +1,19 @@
-import { Animated, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { Item, useCartContext } from '../../context/cartContext';
 import { Swipeable, TouchableOpacity } from 'react-native-gesture-handler';
 import { theme } from '../../core/theme';
-
-const RenderRightActions = ({ priceCode }: { priceCode: string }) => {
-  const { handleRemoveItemToCart } = useCartContext();
-  return (
-    <Animated.View style={[rightActionsStyle.deleteButton]}>
-      <TouchableOpacity onPress={() => handleRemoveItemToCart(priceCode)}>
-        <Text style={rightActionsStyle.deleteButtonText}>Supprimer</Text>
-      </TouchableOpacity>
-    </Animated.View>
-  );
-};
-const rightActionsStyle = StyleSheet.create({
-  deleteButton: {
-    width: 120,
-    backgroundColor: '#b60000',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '100%',
-  },
-  deleteButtonText: {
-    color: '#fcfcfc',
-    fontWeight: 'bold',
-    padding: 3,
-  },
-});
+import RenderRightActions from './RenderRightActions';
 
 const ItemCard = ({ item }: { item: Item }) => {
-  const { addQuantityToItem, removeQuantityToItem } = useCartContext();
+  const { addQuantityToItem, removeQuantityToItem, handleRemoveItemToCart } = useCartContext();
   const getTotalItem = () => {
     const total = parseInt(item.quantity) * parseFloat(item.unitPrice);
     return Math.round((total + Number.EPSILON) * 100) / 100;
   };
   return (
-    <Swipeable renderRightActions={() => <RenderRightActions priceCode={item.priceCode} />}>
+    <Swipeable
+      renderRightActions={() => <RenderRightActions handleOnPress={() => handleRemoveItemToCart(item.priceCode)} />}
+    >
       <View style={styles.cardItem}>
         <View style={styles.containerItem}>
           <View>

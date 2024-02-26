@@ -17,6 +17,10 @@ const Prices = () => {
     bottomSheetRef.current?.present();
     setSelectedPrice(price);
   };
+  const handleCloseSheet = () => {
+    bottomSheetRef.current?.dismiss();
+    setSelectedPrice(undefined);
+  };
   const handleClickCategoryCard = (id: string) => {
     setSelectedCategory(id);
   };
@@ -56,6 +60,12 @@ const Prices = () => {
             isSelected={selectedCategory === category.id}
           />
         ))}
+        <CategoryPriceCard
+          category={{ id: 'CUSTOM', name: 'Autre' }}
+          handleClickCategoryCard={handleClickCategoryCard}
+          key={'CUSTOM'}
+          isSelected={selectedCategory === 'CUSTOM'}
+        />
       </ScrollView>
       <Text style={styles.textPrice}>Prix de la categorie :</Text>
       <ScrollView
@@ -71,8 +81,27 @@ const Prices = () => {
         {displayPrice.map((price) => (
           <PriceCard price={price} key={price.id} handleOpenSheet={handleOpenSheet} />
         ))}
+        {selectedCategory === 'CUSTOM' && (
+          <PriceCard
+            price={{
+              name: 'Personnaliser',
+              amount: 0,
+              id: 'CUSTOMPRICE',
+              price_code: `CUSTOM_${Math.floor((1 + Math.random()) * 0x10000)
+                .toString(16)
+                .substring(1)}`,
+            }}
+            key={'CUSTOM'}
+            handleOpenSheet={handleOpenSheet}
+          />
+        )}
       </ScrollView>
-      <AddPriceToCartModal bottomSheetRef={bottomSheetRef} price={selectedPrice} />
+      <AddPriceToCartModal
+        handleCloseSheet={handleCloseSheet}
+        bottomSheetRef={bottomSheetRef}
+        price={selectedPrice}
+        isCustomPrice={selectedCategory === 'CUSTOM'}
+      />
     </View>
   );
 };

@@ -15,8 +15,10 @@ type QuantityData = {
 type Props = {
   bottomSheetRef: Ref<BottomSheetModal>;
   price?: Price;
+  isCustomPrice: boolean;
+  handleCloseSheet: () => void;
 };
-const AddPriceToCartModal = ({ bottomSheetRef, price }: Props) => {
+const AddPriceToCartModal = ({ bottomSheetRef, price, isCustomPrice, handleCloseSheet }: Props) => {
   if (!price) {
     return (
       <BottomModal ref={bottomSheetRef} title="Ajouter au panier">
@@ -32,7 +34,6 @@ const AddPriceToCartModal = ({ bottomSheetRef, price }: Props) => {
     handleSubmit,
     watch,
     setValue,
-    reset,
     formState: { errors },
   } = useForm<QuantityData>({
     defaultValues: {
@@ -41,6 +42,7 @@ const AddPriceToCartModal = ({ bottomSheetRef, price }: Props) => {
   });
 
   const inputValue = watch('quantity');
+  const unitPriceValue = watch('unitPrice');
 
   const handleAddValue = () => {
     const value = parseInt(inputValue, 10);
@@ -62,23 +64,21 @@ const AddPriceToCartModal = ({ bottomSheetRef, price }: Props) => {
     dismiss();
   };
 
-  const handleDismissModal = () => {
-    reset();
-    setTotal(0);
-  };
-
   useEffect(() => {
+    console.log('here');
+
     setValue('priceCode', price.price_code);
     setValue('unitPrice', `${price.amount}`);
     setValue('name', price.name);
   }, [price]);
 
   useEffect(() => {
-    const amo = price?.amount ?? 0;
+    const amo = isNaN(parseFloat(unitPriceValue)) ? 0 : parseFloat(unitPriceValue);
     const quan = isNaN(parseInt(inputValue, 10)) ? 0 : parseInt(inputValue, 10);
     const tot = Math.round((amo * quan + Number.EPSILON) * 100) / 100;
+    console.log(unitPriceValue);
     setTotal(tot);
-  }, [inputValue, price]);
+  }, [inputValue, price, unitPriceValue]);
 
   const renderFooter = useCallback(
     (props: any) => (
@@ -96,13 +96,39 @@ const AddPriceToCartModal = ({ bottomSheetRef, price }: Props) => {
       ref={bottomSheetRef}
       title="Ajouter au panier"
       renderFooter={renderFooter}
-      onDismiss={handleDismissModal}
+      onDismiss={handleCloseSheet}
     >
       <View style={styles.container}>
         <Text style={styles.textPriceName}>{price.name}</Text>
-        <Text style={styles.textPriceAmount}>
-          Prix unitaire : <Text style={styles.textAmount}>{price.amount}€</Text>
-        </Text>
+        {isCustomPrice ? (
+          <Controller
+            control={control}
+            rules={{
+              required: true,
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <View style={styles.inputUnitPriceContainer}>
+                <Text style={styles.textPriceAmount}>Prix unitaire :</Text>
+                <BottomSheetTextInput
+                  onBlur={onBlur}
+                  style={styles.inputUnitPrice}
+                  onChangeText={(text) => {
+                    const sanitizedValue = text.replace(/,/g, '.');
+                    onChange(sanitizedValue);
+                  }}
+                  value={value}
+                  keyboardType="decimal-pad"
+                />
+                <Text style={styles.inputUnitPriceText}>€</Text>
+              </View>
+            )}
+            name="unitPrice"
+          />
+        ) : (
+          <Text style={styles.textPriceAmount}>
+            Prix unitaire : <Text style={styles.textAmount}>{price.amount}€</Text>
+          </Text>
+        )}
         <View style={styles.quantityContainer}>
           <TouchableOpacity style={styles.buttonAdjustQuantity} onPress={handleReduceValue}>
             <Text style={styles.buttonAdjustQuantityText}>-</Text>
@@ -155,12 +181,29 @@ const styles = StyleSheet.create({
   input: {
     textAlign: 'center',
     width: 90,
-    marginTop: 8,
-    marginBottom: 10,
+    marginTop: 5,
+    marginBottom: 5,
     borderRadius: 10,
-    fontSize: 55,
+    fontSize: 50,
     padding: 8,
     backgroundColor: 'rgba(151, 151, 151, 0.25)',
+  },
+  inputUnitPriceContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  inputUnitPrice: {
+    textAlign: 'center',
+    width: 70,
+    borderRadius: 10,
+    fontSize: 20,
+    padding: 8,
+    backgroundColor: 'rgba(151, 151, 151, 0.25)',
+  },
+  inputUnitPriceText: {
+    fontSize: 20,
   },
   textTotal: { fontSize: 25 },
   textTotalValue: { fontWeight: 'bold' },

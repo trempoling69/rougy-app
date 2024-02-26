@@ -1,4 +1,5 @@
 import { ReactNode, createContext, useContext, useEffect, useState } from 'react';
+import { post } from '../config/api';
 
 type CartContext = {
   items: Item[];
@@ -7,6 +8,9 @@ type CartContext = {
   addQuantityToItem: (itemCode: string, value: number) => void;
   removeQuantityToItem: (itemCode: string, value: number) => void;
   handleRemoveItemToCart: (itemCode: string) => void;
+  validateCart: () => void;
+  validateCartLoading: boolean;
+  validateCartError: boolean;
 };
 export type Item = {
   priceCode: string;
@@ -22,27 +26,16 @@ export const cartContext = createContext<CartContext>({
   addQuantityToItem: () => {},
   removeQuantityToItem: () => {},
   handleRemoveItemToCart: () => {},
+  validateCart: () => {},
+  validateCartLoading: false,
+  validateCartError: false,
 });
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [items, setItems] = useState<Item[]>([]);
   const [total, setTotal] = useState(0);
-  const handleAddItemToCart = (item: Item) => {
-    console.log(item);
-    setItems((prevItems) => {
-      const newItems = [...prevItems, item];
-      return newItems;
-    });
-  };
-
-  const handleRemoveItemToCart = (itemPriceCode: string) => {
-    const newArray = [...items];
-    const element = newArray.findIndex((item) => item.priceCode === itemPriceCode);
-    if (element !== -1) {
-      newArray.splice(element, element);
-    }
-    setItems(newArray);
-  };
+  const [validateCartLoading, setValidateCartLoading] = useState(false);
+  const [validateCartError, setValidateCartError] = useState(false);
 
   const getCartTotal = () => {
     const total = items.reduce((accumulateur, item) => {
@@ -61,6 +54,33 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     getCartTotal();
   }, [items]);
 
+  const handleAddItemToCart = (item: Item) => {
+    console.log(item);
+
+    setItems((prevItems) => {
+      const existingItemIndex = prevItems.findIndex((prevItem) => prevItem.priceCode === item.priceCode);
+      console.log(existingItemIndex);
+
+      if (existingItemIndex !== -1) {
+        const updatedItems = [...prevItems];
+        updatedItems[existingItemIndex].quantity = String(
+          Number(updatedItems[existingItemIndex].quantity) + Number(item.quantity)
+        );
+        return updatedItems;
+      }
+      return [...prevItems, item];
+    });
+  };
+
+  const handleRemoveItemToCart = (itemPriceCode: string) => {
+    const newArray = [...items];
+    const element = newArray.findIndex((item) => item.priceCode === itemPriceCode);
+    if (element !== -1) {
+      newArray.splice(element, 1);
+    }
+    setItems(newArray);
+  };
+
   const addQuantityToItem = (itemPriceCode: string, value: number) => {
     const newArray = [...items];
     const element = newArray.find((item) => item.priceCode === itemPriceCode);
@@ -69,6 +89,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
     setItems(newArray);
   };
+
   const removeQuantityToItem = (itemPriceCode: string, value: number) => {
     const newArray = [...items];
     const element = newArray.find((item) => item.priceCode === itemPriceCode);
@@ -82,9 +103,32 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
     setItems(newArray);
   };
+
+  const validateCart = async () => {
+    try {
+      setValidateCartLoading(true);
+      setValidateCartError(false);
+      await post<string, { products: Item[]; total: number }>('/api/cart', { products: items, total });
+      setItems([]);
+    } catch (err) {
+      setValidateCartError(true);
+    } finally {
+      setValidateCartLoading(false);
+    }
+  };
   return (
     <cartContext.Provider
-      value={{ items, total, handleAddItemToCart, addQuantityToItem, removeQuantityToItem, handleRemoveItemToCart }}
+      value={{
+        items,
+        total,
+        handleAddItemToCart,
+        addQuantityToItem,
+        removeQuantityToItem,
+        handleRemoveItemToCart,
+        validateCart,
+        validateCartLoading,
+        validateCartError,
+      }}
     >
       {children}
     </cartContext.Provider>
