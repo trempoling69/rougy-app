@@ -55,12 +55,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   }, [items]);
 
   const handleAddItemToCart = (item: Item) => {
-    console.log(item);
-
     setItems((prevItems) => {
       const existingItemIndex = prevItems.findIndex((prevItem) => prevItem.priceCode === item.priceCode);
-      console.log(existingItemIndex);
-
       if (existingItemIndex !== -1) {
         const updatedItems = [...prevItems];
         updatedItems[existingItemIndex].quantity = String(

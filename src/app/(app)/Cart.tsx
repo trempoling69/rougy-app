@@ -6,8 +6,6 @@ import BottomSheetCheckout from '../../components/cart/BottomSheetCheckout';
 
 const Cart = () => {
   const { items } = useCartContext();
-  console.log(items);
-
   return (
     <View style={styles.container}>
       <FlatList

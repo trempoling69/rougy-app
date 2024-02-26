@@ -9,8 +9,6 @@ const CartCard = ({ cart, fetchData }: { cart: CartHistory; fetchData: () => voi
     await del(`/api/cart/${id}`);
     fetchData();
   };
-  console.log(cart);
-
   return (
     <Swipeable renderRightActions={() => <RenderRightActions handleOnPress={() => handleDeleteCart(cart.id)} />}>
       <View style={styles.cardItem}>

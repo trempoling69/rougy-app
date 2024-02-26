@@ -65,8 +65,6 @@ const AddPriceToCartModal = ({ bottomSheetRef, price, isCustomPrice, handleClose
   };
 
   useEffect(() => {
-    console.log('here');
-
     setValue('priceCode', price.price_code);
     setValue('unitPrice', `${price.amount}`);
     setValue('name', price.name);
@@ -76,7 +74,6 @@ const AddPriceToCartModal = ({ bottomSheetRef, price, isCustomPrice, handleClose
     const amo = isNaN(parseFloat(unitPriceValue)) ? 0 : parseFloat(unitPriceValue);
     const quan = isNaN(parseInt(inputValue, 10)) ? 0 : parseInt(inputValue, 10);
     const tot = Math.round((amo * quan + Number.EPSILON) * 100) / 100;
-    console.log(unitPriceValue);
     setTotal(tot);
   }, [inputValue, price, unitPriceValue]);
 
