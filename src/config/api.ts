@@ -1,4 +1,4 @@
-export const API_URL = 'http://192.168.1.126:3001';
+export const API_URL = 'https://api.vps.romain-mourieras.fr';
 
 import * as SecureStore from 'expo-secure-store';
 import { GenericRequestError, GenericRequestResponse } from '../type/request';

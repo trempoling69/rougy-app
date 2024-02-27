@@ -25,12 +25,14 @@ const Bill = () => {
     setRefreshing(false);
   }, []);
   const fetchData = async () => {
-    const request = await get<CartHistoryRequest[]>('/api/cart');
-    const product: CartHistory[] = request.data.map((cart) => ({
-      ...cart,
-      products: JSON.parse(cart.products),
-    }));
-    setCartHistory(product);
+    const request = await get<CartHistory[]>('/api/cart');
+    console.log(request.data);
+
+    // const product: CartHistory[] = request.data.map((cart) => ({
+    //   ...cart,
+    //   products: JSON.parse(cart.products),
+    // }));
+    setCartHistory(request.data);
   };
   useEffect(() => {
     fetchData();
