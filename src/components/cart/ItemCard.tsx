@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Item, useCartContext } from '../../context/cartContext';
 import { Swipeable, TouchableOpacity } from 'react-native-gesture-handler';
 import { theme } from '../../core/theme';
-import RenderRightActions from './RenderRightActions';
+import RenderRightActions from '../ListActions/RenderRightActions';
 
 const ItemCard = ({ item }: { item: Item }) => {
   const { addQuantityToItem, removeQuantityToItem, handleRemoveItemToCart } = useCartContext();

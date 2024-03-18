@@ -1,5 +1,5 @@
 import { BottomSheetFooter, BottomSheetModal, BottomSheetTextInput, useBottomSheetModal } from '@gorhom/bottom-sheet';
-import { Ref, useCallback, useEffect, useState } from 'react';
+import { Ref, useCallback, useEffect, useRef, useState } from 'react';
 import { View, Text, Pressable, StyleSheet, TouchableOpacity } from 'react-native';
 import BottomModal from '../BottomModal';
 import { Controller, useForm } from 'react-hook-form';
@@ -29,6 +29,8 @@ const AddPriceToCartModal = ({ bottomSheetRef, price, isCustomPrice, handleClose
   const { dismiss } = useBottomSheetModal();
   const { handleAddItemToCart } = useCartContext();
   const [total, setTotal] = useState(0);
+  const isSubmittingRef = useRef(false);
+
   const {
     control,
     handleSubmit,
@@ -59,7 +61,9 @@ const AddPriceToCartModal = ({ bottomSheetRef, price, isCustomPrice, handleClose
     setValue('quantity', `${newValue}`);
   };
 
-  const onSubmit = async (data: QuantityData) => {
+  const onSubmit = (data: QuantityData) => {
+    if (isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
     handleAddItemToCart(data);
     dismiss();
   };
@@ -80,7 +84,7 @@ const AddPriceToCartModal = ({ bottomSheetRef, price, isCustomPrice, handleClose
   const renderFooter = useCallback(
     (props: any) => (
       <BottomSheetFooter {...props} bottomInset={24}>
-        <Pressable style={styles.footerContainer} onPress={handleSubmit(onSubmit)}>
+        <Pressable style={styles.footerContainer} onPress={handleSubmit(onSubmit)} disabled={isSubmittingRef.current}>
           <Text style={styles.footerText}>Ajouter</Text>
         </Pressable>
       </BottomSheetFooter>

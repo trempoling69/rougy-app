@@ -1,28 +1,49 @@
 import { Swipeable, TouchableOpacity } from 'react-native-gesture-handler';
-import RenderRightActions from '../cart/RenderRightActions';
+import RenderRightActions from '../ListActions/RenderRightActions';
 import { StyleSheet, Text, View } from 'react-native';
-import { CartHistory } from '../../app/(app)/Bill';
 import { del } from '../../config/api';
+import RenderLeftActions from '../ListActions/RenderLeftAction';
+import { router } from 'expo-router';
+import { Bill } from '../../context/billContext';
+import { memo } from 'react';
+import { useCartContext } from '../../context/cartContext';
 
-const CartCard = ({ cart, fetchData }: { cart: CartHistory; fetchData: () => void }) => {
-  const handleDeleteCart = async (id: string) => {
-    await del(`/api/cart/${id}`);
-    fetchData();
-  };
-  return (
-    <Swipeable renderRightActions={() => <RenderRightActions handleOnPress={() => handleDeleteCart(cart.id)} />}>
-      <View style={styles.cardItem}>
-        <View style={styles.containerDate}>
-          <Text style={styles.dateText}>{new Date(cart.createdAt).toLocaleDateString()}</Text>
-          <Text style={styles.dateText}>{new Date(cart.createdAt).toLocaleTimeString()}</Text>
+const CartCard = memo(
+  ({ cart, fetchData }: { cart: Bill; fetchData: () => void }) => {
+    const { retrieveCart } = useCartContext();
+
+    const handleDeleteCart = async (id: string) => {
+      await del(`/api/cart/${id}`);
+      fetchData();
+    };
+    const handleResumeCart = async () => {
+      retrieveCart(cart.products, cart.total, cart.id);
+    };
+
+    const viewCart = () => {
+      router.push(`/Bill/${cart.id}`);
+    };
+    return (
+      <Swipeable
+        renderRightActions={() => <RenderRightActions handleOnPress={() => handleDeleteCart(cart.id)} />}
+        renderLeftActions={() => <RenderLeftActions handleOnPress={handleResumeCart} secondHandleOnPress={viewCart} />}
+      >
+        <View style={styles.cardItem}>
+          <View style={styles.containerDate}>
+            <Text style={styles.dateText}>{new Date(cart.createdAt).toLocaleDateString()}</Text>
+            <Text style={styles.dateText}>{new Date(cart.createdAt).toLocaleTimeString()}</Text>
+          </View>
+          <View>
+            <Text style={styles.totalText}>{cart.total + '€'}</Text>
+          </View>
         </View>
-        <View>
-          <Text style={styles.totalText}>{cart.total + '€'}</Text>
-        </View>
-      </View>
-    </Swipeable>
-  );
-};
+      </Swipeable>
+    );
+  },
+  (prevProps, nextProps) => {
+    return prevProps.cart.total === nextProps.cart.total;
+  }
+);
 const styles = StyleSheet.create({
   cardItem: {
     width: '100%',

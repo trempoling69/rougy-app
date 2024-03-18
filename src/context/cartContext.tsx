@@ -1,5 +1,5 @@
 import { ReactNode, createContext, useContext, useEffect, useState } from 'react';
-import { post } from '../config/api';
+import { patch, post } from '../config/api';
 
 type CartContext = {
   items: Item[];
@@ -11,6 +11,7 @@ type CartContext = {
   validateCart: () => void;
   validateCartLoading: boolean;
   validateCartError: boolean;
+  retrieveCart: (items: Item[], total: number, id: string) => void;
 };
 export type Item = {
   priceCode: string;
@@ -29,6 +30,7 @@ export const cartContext = createContext<CartContext>({
   validateCart: () => {},
   validateCartLoading: false,
   validateCartError: false,
+  retrieveCart: () => {},
 });
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
@@ -36,6 +38,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [total, setTotal] = useState(0);
   const [validateCartLoading, setValidateCartLoading] = useState(false);
   const [validateCartError, setValidateCartError] = useState(false);
+  const [idUpdated, setIdUpdated] = useState<string | null>(null);
 
   const getCartTotal = () => {
     const total = items.reduce((accumulateur, item) => {
@@ -104,7 +107,16 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     try {
       setValidateCartLoading(true);
       setValidateCartError(false);
-      await post<string, { products: Item[]; total: number }>('/api/cart', { products: items, total });
+      if (idUpdated !== null) {
+        console.log(items);
+        await patch<string, { products: Item[]; total: number }>(`/api/cart/${idUpdated}`, {
+          products: items,
+          total,
+        });
+        setIdUpdated(null);
+      } else {
+        await post<string, { products: Item[]; total: number }>('/api/cart', { products: items, total });
+      }
       setItems([]);
     } catch (err) {
       setValidateCartError(true);
@@ -112,6 +124,13 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       setValidateCartLoading(false);
     }
   };
+
+  const retrieveCart = (items: Item[], total: number, id: string) => {
+    setItems(items);
+    setTotal(total);
+    setIdUpdated(id);
+  };
+
   return (
     <cartContext.Provider
       value={{
@@ -124,6 +143,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         validateCart,
         validateCartLoading,
         validateCartError,
+        retrieveCart,
       }}
     >
       {children}

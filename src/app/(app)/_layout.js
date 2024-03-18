@@ -43,6 +43,7 @@ export default function AppLayout() {
       <Tabs.Screen
         name="Bill"
         options={{
+          headerShown: false,
           tabBarLabel: 'Historique',
           tabBarIcon: ({ color, size }) => <Ionicons name="document-text" color={color} size={size} />,
           headerTitle: 'Historique des comptes',
