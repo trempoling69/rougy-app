@@ -1,31 +1,50 @@
 import { useCallback, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { SectionList, StyleSheet, View } from 'react-native';
 import { FlatList, RefreshControl } from 'react-native-gesture-handler';
 import CartCard from '../../../components/bill/CartCard';
 import { Bill, useBillContext } from '../../../context/billContext';
+import ListItem from '../../../components/bill/sectionList/ListItem';
+import SectionHeader from '../../../components/bill/sectionList/SectionHeader';
 
 const index = () => {
   const { fetchAllBill, bills } = useBillContext();
   const [refreshing, setRefreshing] = useState(false);
+  const fetch = async () => {
+    await fetchAllBill('2024-03-16');
+  };
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    await fetchAllBill();
+    await fetchAllBill('2024-03-16');
     setRefreshing(false);
   }, []);
-  const _keyExtractor = useCallback((item: Bill) => {
-    return item.id;
+  const _keyExtractor = useCallback((item: string, index: number) => {
+    return item + index;
   }, []);
-  const _renderItem = useCallback(({ item }: { item: Bill }) => <CartCard cart={item} fetchData={fetchAllBill} />, []);
+  const _renderItem = useCallback(({ item }: { item: string }) => <ListItem item={item} />, []);
+  const _renderHeader = useCallback(
+    ({ section: { title } }: { section: { title: string } }) => <SectionHeader title={title} />,
+    []
+  );
+  const DATA = [
+    {
+      title: 'Historique',
+      data: ['Journée', '7 jours'],
+    },
+    {
+      title: 'Statistique',
+      data: ['stats journée'],
+    },
+  ];
   return (
-    <View>
-      <FlatList
-        style={{ width: '100%', minHeight: '100%' }}
-        data={bills.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())}
+    <View style={styles.container}>
+      <SectionList
+        sections={DATA}
+        keyExtractor={_keyExtractor}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
         renderItem={_renderItem}
-        keyExtractor={_keyExtractor}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} title="Recharger l'historique" />}
-        maxToRenderPerBatch={10}
+        renderSectionHeader={_renderHeader}
+        onEndReachedThreshold={0.5}
+        bounces={false}
       />
     </View>
   );
@@ -33,7 +52,7 @@ const index = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
+    marginTop: 24,
     width: '100%',
   },
   separator: {

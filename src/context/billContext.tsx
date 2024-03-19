@@ -13,7 +13,7 @@ type BillContext = {
   bills: Bill[];
   isError: boolean;
   isLoading: boolean;
-  fetchAllBill: () => Promise<void>;
+  fetchAllBill: (startDate: string, endDate?: string) => Promise<void>;
 };
 
 export const billContext = createContext<BillContext>({
@@ -28,12 +28,11 @@ export const BillProvider = ({ children }: { children: ReactNode }) => {
   const [isError, setIsError] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const fetchAllBill = async () => {
+  const fetchAllBill = async (startDate: string, endDate?: string) => {
     try {
-      console.log('fetch');
       setIsError(false);
       setIsLoading(true);
-      const request = await get<Bill[]>('/api/cart');
+      const request = await get<Bill[]>(`/api/cart/history`, { startDate: startDate, endDate: endDate });
       setBills(request.data);
     } catch (err) {
       console.log(err);
@@ -42,10 +41,6 @@ export const BillProvider = ({ children }: { children: ReactNode }) => {
       setIsLoading(false);
     }
   };
-
-  useEffect(() => {
-    fetchAllBill();
-  }, []);
 
   return <billContext.Provider value={{ bills, isError, isLoading, fetchAllBill }}>{children}</billContext.Provider>;
 };

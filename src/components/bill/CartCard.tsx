@@ -7,6 +7,7 @@ import { router } from 'expo-router';
 import { Bill } from '../../context/billContext';
 import { memo } from 'react';
 import { useCartContext } from '../../context/cartContext';
+import { APP_URL } from '../../config/url';
 
 const CartCard = memo(
   ({ cart, fetchData }: { cart: Bill; fetchData: () => void }) => {
@@ -21,14 +22,14 @@ const CartCard = memo(
     };
 
     const viewCart = () => {
-      router.push(`/Bill/${cart.id}`);
+      router.push(APP_URL.BillById(cart.id));
     };
     return (
       <Swipeable
         renderRightActions={() => <RenderRightActions handleOnPress={() => handleDeleteCart(cart.id)} />}
-        renderLeftActions={() => <RenderLeftActions handleOnPress={handleResumeCart} secondHandleOnPress={viewCart} />}
+        renderLeftActions={() => <RenderLeftActions handleOnPress={handleResumeCart} />}
       >
-        <View style={styles.cardItem}>
+        <TouchableOpacity style={styles.cardItem} onPress={viewCart}>
           <View style={styles.containerDate}>
             <Text style={styles.dateText}>{new Date(cart.createdAt).toLocaleDateString()}</Text>
             <Text style={styles.dateText}>{new Date(cart.createdAt).toLocaleTimeString()}</Text>
@@ -36,7 +37,7 @@ const CartCard = memo(
           <View>
             <Text style={styles.totalText}>{cart.total + '€'}</Text>
           </View>
-        </View>
+        </TouchableOpacity>
       </Swipeable>
     );
   },

@@ -3,19 +3,13 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 
 type Props = {
   handleOnPress: () => void;
-  secondHandleOnPress?: () => void;
 };
-const RenderLeftActions = ({ handleOnPress, secondHandleOnPress }: Props) => {
+const RenderLeftActions = ({ handleOnPress }: Props) => {
   return (
     <>
       <Animated.View style={[rightActionsStyle.continueButton]}>
         <TouchableOpacity onPress={handleOnPress}>
           <Text style={rightActionsStyle.continueButtonText}>Récupérer</Text>
-        </TouchableOpacity>
-      </Animated.View>
-      <Animated.View style={[rightActionsStyle.seeButton]}>
-        <TouchableOpacity onPress={secondHandleOnPress}>
-          <Text style={rightActionsStyle.seeButtonText}>Voir</Text>
         </TouchableOpacity>
       </Animated.View>
     </>

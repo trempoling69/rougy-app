@@ -105,6 +105,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const validateCart = async () => {
     try {
+      if (items.length === 0) return;
       setValidateCartLoading(true);
       setValidateCartError(false);
       if (idUpdated !== null) {
