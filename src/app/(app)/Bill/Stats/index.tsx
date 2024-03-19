@@ -12,7 +12,7 @@ type OtherStats = { sum: number; count: number };
 const Stats = () => {
   const [statsData, setStatsDate] = useState<StatData[]>([]);
   const [otherStats, setOtherStats] = useState<OtherStats>({ sum: 0, count: 0 });
-  const startDate = new Date('2024-03-16').toISOString().split('T')[0];
+  const startDate = new Date().toISOString().split('T')[0];
   const fetchStats = async () => {
     const response = await get<FetchData>(`/api/cart/stats/${startDate}`);
     console.log(response.data);

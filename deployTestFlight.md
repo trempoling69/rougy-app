@@ -35,7 +35,7 @@ eas build --platform ios
 
 1. lancer dans le terminal
 
-```
+```shell
 eas submit -p ios --latest
 ```
 
