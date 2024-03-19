@@ -1,0 +1,2 @@
+eas.json filter=remove_apple_id
+app.json filter=remove_apple_id
