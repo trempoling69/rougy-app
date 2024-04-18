@@ -12,7 +12,7 @@ const ItemCard = ({ item }: { item: Item }) => {
   };
   return (
     <Swipeable
-      renderRightActions={() => <RenderRightActions handleOnPress={() => handleRemoveItemToCart(item.priceCode)} />}
+      renderRightActions={() => <RenderRightActions handleOnPress={() => handleRemoveItemToCart(item.priceId)} />}
     >
       <View style={styles.cardItem}>
         <View style={styles.containerItem}>
@@ -23,11 +23,11 @@ const ItemCard = ({ item }: { item: Item }) => {
           <Text style={styles.totalText}>{getTotalItem() + '€'}</Text>
         </View>
         <View style={styles.containerQuantity}>
-          <TouchableOpacity style={styles.buttonAdjustQuantity} onPress={() => removeQuantityToItem(item.priceCode, 1)}>
+          <TouchableOpacity style={styles.buttonAdjustQuantity} onPress={() => removeQuantityToItem(item.priceId, 1)}>
             <Text style={styles.buttonAdjustQuantityText}>-</Text>
           </TouchableOpacity>
           <Text style={styles.textQuantity}>{item.quantity}</Text>
-          <TouchableOpacity style={styles.buttonAdjustQuantity} onPress={() => addQuantityToItem(item.priceCode, 1)}>
+          <TouchableOpacity style={styles.buttonAdjustQuantity} onPress={() => addQuantityToItem(item.priceId, 1)}>
             <Text style={styles.buttonAdjustQuantityText}>+</Text>
           </TouchableOpacity>
         </View>

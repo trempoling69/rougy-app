@@ -14,7 +14,7 @@ type CartContext = {
   retrieveCart: (items: Item[], total: number, id: string) => void;
 };
 export type Item = {
-  priceCode: string;
+  priceId: string;
   unitPrice: string;
   quantity: string;
   name: string;
@@ -59,7 +59,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const handleAddItemToCart = (item: Item) => {
     setItems((prevItems) => {
-      const existingItemIndex = prevItems.findIndex((prevItem) => prevItem.priceCode === item.priceCode);
+      const existingItemIndex = prevItems.findIndex((prevItem) => prevItem.priceId === item.priceId);
       if (existingItemIndex !== -1) {
         const updatedItems = [...prevItems];
         updatedItems[existingItemIndex].quantity = String(
@@ -71,27 +71,27 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  const handleRemoveItemToCart = (itemPriceCode: string) => {
+  const handleRemoveItemToCart = (itemPriceId: string) => {
     const newArray = [...items];
-    const element = newArray.findIndex((item) => item.priceCode === itemPriceCode);
+    const element = newArray.findIndex((item) => item.priceId === itemPriceId);
     if (element !== -1) {
       newArray.splice(element, 1);
     }
     setItems(newArray);
   };
 
-  const addQuantityToItem = (itemPriceCode: string, value: number) => {
+  const addQuantityToItem = (itemPriceId: string, value: number) => {
     const newArray = [...items];
-    const element = newArray.find((item) => item.priceCode === itemPriceCode);
+    const element = newArray.find((item) => item.priceId === itemPriceId);
     if (element) {
       element.quantity = JSON.stringify(parseInt(element.quantity, 10) + value);
     }
     setItems(newArray);
   };
 
-  const removeQuantityToItem = (itemPriceCode: string, value: number) => {
+  const removeQuantityToItem = (itemPriceId: string, value: number) => {
     const newArray = [...items];
-    const element = newArray.find((item) => item.priceCode === itemPriceCode);
+    const element = newArray.find((item) => item.priceId === itemPriceId);
     if (element) {
       const newValue = parseInt(element.quantity, 10) - value;
       if (newValue < 1) {

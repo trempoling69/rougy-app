@@ -86,8 +86,7 @@ const Prices = () => {
             price={{
               name: 'Personnaliser',
               amount: 0,
-              id: 'CUSTOMPRICE',
-              price_code: `CUSTOM_${Math.floor((1 + Math.random()) * 0x10000)
+              id: `CUSTOM_${Math.floor((1 + Math.random()) * 0x10000)
                 .toString(16)
                 .substring(1)}`,
             }}

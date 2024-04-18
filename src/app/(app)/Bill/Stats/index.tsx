@@ -15,12 +15,10 @@ const Stats = () => {
   const startDate = new Date().toISOString().split('T')[0];
   const fetchStats = async () => {
     const response = await get<FetchData>(`/api/cart/stats/${startDate}`);
-    console.log(response.data);
-
     const formatReponse = response.data.total
       .map((res) => {
         return {
-          date: new Date().toDateString(),
+          date: new Date().toLocaleDateString(),
           hour: parseInt(res.hour.split(':')[0]) - new Date().getTimezoneOffset() / 60,
           total: getRoundNumber(res.total),
         };
@@ -95,7 +93,7 @@ const Stats = () => {
                 </Text>
 
                 <View style={{ paddingHorizontal: 14, paddingVertical: 6, borderRadius: 16, backgroundColor: 'white' }}>
-                  <Text style={{ fontWeight: 'bold', textAlign: 'center' }}>{'€' + items[0].date}</Text>
+                  <Text style={{ fontWeight: 'bold', textAlign: 'center' }}>{'€' + items[0].value}</Text>
                 </View>
               </View>
             );

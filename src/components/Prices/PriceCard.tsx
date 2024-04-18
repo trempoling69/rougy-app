@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 import { Price } from '../../type/basic';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 type Props = {

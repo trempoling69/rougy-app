@@ -8,7 +8,7 @@ import { useCartContext } from '../../context/cartContext';
 
 type QuantityData = {
   unitPrice: string;
-  priceCode: string;
+  priceId: string;
   quantity: string;
   name: string;
 };
@@ -69,7 +69,7 @@ const AddPriceToCartModal = ({ bottomSheetRef, price, isCustomPrice, handleClose
   };
 
   useEffect(() => {
-    setValue('priceCode', price.price_code);
+    setValue('priceId', price.id);
     setValue('unitPrice', `${price.amount}`);
     setValue('name', price.name);
   }, [price]);

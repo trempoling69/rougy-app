@@ -4,7 +4,6 @@ export type Price = {
   amount: number;
   category_id?: string;
   categoryPrice?: CategoryPrice | null;
-  price_code: string;
 };
 
 export type CategoryPrice = {

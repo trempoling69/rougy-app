@@ -13,7 +13,7 @@ const Cart = () => {
         data={items}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
         renderItem={(i) => <ItemCard item={i.item} />}
-        keyExtractor={(item) => item.priceCode}
+        keyExtractor={(item) => item.priceId}
       />
       <BottomSheetCheckout />
     </View>
