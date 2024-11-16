@@ -8,6 +8,7 @@
     "userInterfaceStyle": "light",
     "backgroundColor": "#ffffff",
     "scheme": "rougy-app",
+    "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
