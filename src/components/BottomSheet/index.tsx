@@ -1,6 +1,6 @@
-import BottomSheet, { BottomSheetBackdrop, BottomSheetFooter, BottomSheetFooterProps } from '@gorhom/bottom-sheet';
-import { FC, ReactNode, forwardRef, useCallback, useMemo } from 'react';
-import { View, Text, StyleSheet, Pressable, StyleProp, ViewStyle } from 'react-native';
+import BottomSheet, { BottomSheetFooterProps, BottomSheetView } from '@gorhom/bottom-sheet';
+import { FC, ReactNode, forwardRef, useMemo } from 'react';
+import { Text, StyleSheet, StyleProp, ViewStyle } from 'react-native';
 
 type Props = {
   title: string;
@@ -20,10 +20,10 @@ const CustomBottomSheet = forwardRef<BottomSheet, Props>(({ title, children, ren
       footerComponent={renderFooter}
       handleIndicatorStyle={indicatorStyle}
     >
-      <View style={styles.contentSheetContainer}>
+      <BottomSheetView style={styles.contentSheetContainer}>
         <Text style={styles.contentSheetHeadline}>{title}</Text>
         {children}
-      </View>
+      </BottomSheetView>
     </BottomSheet>
   );
 });

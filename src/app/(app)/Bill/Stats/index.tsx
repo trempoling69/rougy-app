@@ -9,7 +9,7 @@ type StatDataFetch = { date: string; hour: string; total: number };
 type FetchData = { total: StatDataFetch[]; sum: number; count: number };
 type StatData = { date: string; hour: number; total: number };
 type OtherStats = { sum: number; count: number };
-const Stats = () => {
+const index = () => {
   const [statsData, setStatsDate] = useState<StatData[]>([]);
   const [otherStats, setOtherStats] = useState<OtherStats>({ sum: 0, count: 0 });
   const startDate = new Date().toISOString().split('T')[0];
@@ -138,4 +138,5 @@ const styles = StyleSheet.create({
   },
   valueBoxStats: { fontSize: 25, fontWeight: 'bold', color: theme.colors.white },
 });
-export default Stats;
+
+export default index;

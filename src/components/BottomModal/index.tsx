@@ -1,6 +1,6 @@
-import { BottomSheetBackdrop, BottomSheetFooter, BottomSheetFooterProps, BottomSheetModal } from '@gorhom/bottom-sheet';
+import { BottomSheetBackdrop, BottomSheetFooterProps, BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
 import { FC, ReactNode, forwardRef, useCallback, useMemo } from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { Text, StyleSheet } from 'react-native';
 
 type Props = {
   title: string;
@@ -9,7 +9,7 @@ type Props = {
   onDismiss?: () => void;
 };
 const BottomModal = forwardRef<BottomSheetModal, Props>(({ title, children, renderFooter, onDismiss }, ref) => {
-  const snapPoints = useMemo(() => ['50%'], []);
+  const snapPoints = useMemo(() => ['50%', '90%'], []);
   const renderBackdrop = useCallback(
     (props: any) => <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />,
     []
@@ -17,18 +17,20 @@ const BottomModal = forwardRef<BottomSheetModal, Props>(({ title, children, rend
 
   return (
     <BottomSheetModal
+      index={0}
       ref={ref}
       snapPoints={snapPoints}
       backdropComponent={renderBackdrop}
       enablePanDownToClose
+      enableDynamicSizing={false}
       keyboardBehavior="interactive"
       footerComponent={renderFooter}
       onDismiss={onDismiss}
     >
-      <View style={styles.contentSheetContainer}>
+      <BottomSheetView style={styles.contentSheetContainer}>
         <Text style={styles.contentSheetHeadline}>{title}</Text>
         {children}
-      </View>
+      </BottomSheetView>
     </BottomSheetModal>
   );
 });

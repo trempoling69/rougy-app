@@ -35,7 +35,7 @@ const CountDetail = () => {
             </View>
           </View>
         )}
-        keyExtractor={(item) => item.priceCode}
+        keyExtractor={(item) => item.priceId}
       />
     </View>
   );

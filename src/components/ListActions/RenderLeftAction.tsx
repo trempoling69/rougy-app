@@ -1,25 +1,30 @@
-import { Animated, StyleSheet, Text } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { Pressable, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import Reanimated, { SharedValue, useAnimatedStyle } from 'react-native-reanimated';
 
 type Props = {
   handleOnPress: () => void;
+  prog: SharedValue<number>;
+  drag: SharedValue<number>;
 };
-const RenderLeftActions = ({ handleOnPress }: Props) => {
+const RenderLeftActions = ({ handleOnPress, prog, drag }: Props) => {
+  const styleAnimation = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: drag.value + 300 }],
+    };
+  });
+
   return (
-    <>
-      <Animated.View style={[rightActionsStyle.continueButton]}>
-        <TouchableOpacity onPress={handleOnPress}>
-          <Text style={rightActionsStyle.continueButtonText}>Récupérer</Text>
-        </TouchableOpacity>
-      </Animated.View>
-    </>
+    <Reanimated.View style={[styleAnimation]}>
+      <Pressable onPress={() => handleOnPress()} style={rightActionsStyle.continueButton}>
+        <Text style={rightActionsStyle.continueButtonText}>Récupérer</Text>
+      </Pressable>
+    </Reanimated.View>
   );
 };
 const rightActionsStyle = StyleSheet.create({
   continueButton: {
-    width: 120,
+    width: 100,
     backgroundColor: '#2a9134',
-    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     height: '100%',
@@ -27,20 +32,6 @@ const rightActionsStyle = StyleSheet.create({
   continueButtonText: {
     color: '#fcfcfc',
     fontWeight: 'bold',
-    padding: 3,
-  },
-  seeButton: {
-    width: 120,
-    backgroundColor: '#613dc1',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '100%',
-  },
-  seeButtonText: {
-    color: '#fcfcfc',
-    fontWeight: 'bold',
-    padding: 3,
   },
 });
 

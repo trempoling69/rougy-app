@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { usePriceContext } from '../../context/priceContext';
 import CategoryPriceCard from './CategoryPriceCard';
 import { useEffect, useRef, useState } from 'react';
@@ -6,20 +6,25 @@ import { Price } from '../../type/basic';
 import PriceCard from './PriceCard';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import AddPriceToCartModal from './AddPriceToCartModal';
+import ScanCard from './scan/ScanCard';
 
 const Prices = () => {
-  const { prices, categoriesPrice, isLoading, isError } = usePriceContext();
+  const { prices, categoriesPrice, isLoading, isError, scanError, setScanError, scannedPrice, setScannedPrice } =
+    usePriceContext();
   const [selectedCategory, setSelectedCategory] = useState('');
-  const [displayPrice, setDisplayPrice] = useState<Price[]>([]);
-  const [selectedPrice, setSelectedPrice] = useState<Price>();
+  const [selectedPrice, setSelectedPrice] = useState<Price | null>(null);
   const bottomSheetRef = useRef<BottomSheetModal>(null);
+  const [displayPrice, setDisplayPrice] = useState<Price[]>([]);
   const handleOpenSheet = (price: Price) => {
-    bottomSheetRef.current?.present();
     setSelectedPrice(price);
+    bottomSheetRef.current?.present();
   };
   const handleCloseSheet = () => {
     bottomSheetRef.current?.dismiss();
-    setSelectedPrice(undefined);
+    setSelectedPrice(null);
+    if (scannedPrice) {
+      setScannedPrice(null);
+    }
   };
   const handleClickCategoryCard = (id: string) => {
     setSelectedCategory(id);
@@ -29,6 +34,26 @@ const Prices = () => {
       setSelectedCategory(categoriesPrice[0].id);
     }
   }, [categoriesPrice]);
+
+  useEffect(() => {
+    if (scanError) {
+      Alert.alert('Erreur du scan', 'Une erreur est survenue lors de la récupération du prix', [
+        {
+          text: 'Cancel',
+          onPress: () => setScanError(false),
+          style: 'cancel',
+        },
+        { text: 'OK', onPress: () => setScanError(false) },
+      ]);
+    }
+  }, [scanError]);
+
+  useEffect(() => {
+    if (scannedPrice) {
+      handleOpenSheet(scannedPrice);
+    }
+  }, [scannedPrice]);
+
   useEffect(() => {
     const selectPrice = prices.filter((price) => price.category_id === selectedCategory);
     setDisplayPrice(selectPrice);
@@ -78,26 +103,29 @@ const Prices = () => {
           justifyContent: 'center',
         }}
       >
-        {displayPrice.map((price) => (
-          <PriceCard price={price} key={price.id} handleOpenSheet={handleOpenSheet} />
+        {displayPrice.map((price, index) => (
+          <PriceCard price={price} key={index} handleOpenSheet={handleOpenSheet} />
         ))}
         {selectedCategory === 'CUSTOM' && (
-          <PriceCard
-            price={{
-              name: 'Personnaliser',
-              amount: 0,
-              id: `CUSTOM_${Math.floor((1 + Math.random()) * 0x10000)
-                .toString(16)
-                .substring(1)}`,
-            }}
-            key={'CUSTOM'}
-            handleOpenSheet={handleOpenSheet}
-          />
+          <>
+            <PriceCard
+              price={{
+                name: 'Personnaliser',
+                amount: 0,
+                id: `CUSTOM_${Math.floor((1 + Math.random()) * 0x10000)
+                  .toString(16)
+                  .substring(1)}`,
+              }}
+              key={'CUSTOM'}
+              handleOpenSheet={handleOpenSheet}
+            />
+            <ScanCard key={'CUSTOM_2'} />
+          </>
         )}
       </ScrollView>
       <AddPriceToCartModal
+        ref={bottomSheetRef}
         handleCloseSheet={handleCloseSheet}
-        bottomSheetRef={bottomSheetRef}
         price={selectedPrice}
         isCustomPrice={selectedCategory === 'CUSTOM'}
       />

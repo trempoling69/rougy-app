@@ -1,12 +1,6 @@
-import { PriceProvider } from '../../context/priceContext';
-import Prices from '../../components/Prices';
+import { Redirect } from 'expo-router';
 
-const index = () => {
-  return (
-    <PriceProvider>
-      <Prices />
-    </PriceProvider>
-  );
+const Index = () => {
+  return <Redirect href="/Price" />;
 };
-
-export default index;
+export default Index;

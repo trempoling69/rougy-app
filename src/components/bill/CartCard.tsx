@@ -1,13 +1,12 @@
-import { Swipeable, TouchableOpacity } from 'react-native-gesture-handler';
 import RenderRightActions from '../ListActions/RenderRightActions';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { del } from '../../config/api';
-import RenderLeftActions from '../ListActions/RenderLeftAction';
 import { router } from 'expo-router';
 import { Bill } from '../../context/billContext';
 import { memo } from 'react';
 import { useCartContext } from '../../context/cartContext';
 import { APP_URL } from '../../config/url';
+import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 
 const CartCard = memo(
   ({ cart, fetchData }: { cart: Bill; fetchData: () => void }) => {
@@ -18,6 +17,8 @@ const CartCard = memo(
       fetchData();
     };
     const handleResumeCart = async () => {
+      console.log('trigger');
+
       retrieveCart(cart.products, cart.total, cart.id);
     };
 
@@ -26,18 +27,39 @@ const CartCard = memo(
     };
     return (
       <Swipeable
-        renderRightActions={() => <RenderRightActions handleOnPress={() => handleDeleteCart(cart.id)} />}
-        renderLeftActions={() => <RenderLeftActions handleOnPress={handleResumeCart} />}
+        rightThreshold={40}
+        leftThreshold={40}
+        containerStyle={{ width: '100%' }}
+        renderRightActions={(_, drag) => (
+          <>
+            <RenderRightActions
+              index={1}
+              text="Supprimer"
+              color="#b60000"
+              drag={drag}
+              handleOnPress={() => handleDeleteCart(cart.id)}
+            />
+            <RenderRightActions
+              index={2}
+              text="Récupérer"
+              color="#2a9134"
+              drag={drag}
+              handleOnPress={() => handleResumeCart()}
+            />
+          </>
+        )}
       >
-        <TouchableOpacity style={styles.cardItem} onPress={viewCart}>
-          <View style={styles.containerDate}>
-            <Text style={styles.dateText}>{new Date(cart.createdAt).toLocaleDateString()}</Text>
-            <Text style={styles.dateText}>{new Date(cart.createdAt).toLocaleTimeString()}</Text>
-          </View>
-          <View>
-            <Text style={styles.totalText}>{cart.total + '€'}</Text>
-          </View>
-        </TouchableOpacity>
+        <View style={styles.cardItem}>
+          <TouchableOpacity style={styles.cardItem} onPress={viewCart}>
+            <View style={styles.containerDate}>
+              <Text style={styles.dateText}>{new Date(cart.createdAt).toLocaleDateString()}</Text>
+              <Text style={styles.dateText}>{new Date(cart.createdAt).toLocaleTimeString()}</Text>
+            </View>
+            <View>
+              <Text style={styles.totalText}>{cart.total + '€'}</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
       </Swipeable>
     );
   },
