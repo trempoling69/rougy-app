@@ -1,8 +1,6 @@
 import { useCallback, useState } from 'react';
 import { SectionList, StyleSheet, View } from 'react-native';
-import { FlatList, RefreshControl } from 'react-native-gesture-handler';
-import CartCard from '../../../components/bill/CartCard';
-import { Bill, useBillContext } from '../../../context/billContext';
+import { useBillContext } from '../../../context/billContext';
 import ListItem from '../../../components/bill/sectionList/ListItem';
 import SectionHeader from '../../../components/bill/sectionList/SectionHeader';
 

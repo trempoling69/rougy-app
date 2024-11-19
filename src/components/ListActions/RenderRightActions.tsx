@@ -1,20 +1,38 @@
-import { Animated, StyleSheet, Text } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+import Reanimated, { SharedValue, useAnimatedStyle } from 'react-native-reanimated';
 
-const RenderRightActions = ({ handleOnPress }: { handleOnPress: () => void }) => {
+const RenderRightActions = ({
+  handleOnPress,
+  index,
+  drag,
+  text,
+  color,
+}: {
+  handleOnPress: () => void;
+  index: number;
+  drag: SharedValue<number>;
+  text: string;
+  color: string;
+}) => {
+  const styleAnimation = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: drag.value + 100 + (index !== 1 ? 100 * index : 0) }],
+    };
+  });
   return (
-    <Animated.View style={[rightActionsStyle.deleteButton]}>
-      <TouchableOpacity onPress={handleOnPress}>
-        <Text style={rightActionsStyle.deleteButtonText}>Supprimer</Text>
+    <Reanimated.View style={[styleAnimation]}>
+      <TouchableOpacity
+        onPress={() => handleOnPress()}
+        style={[rightActionsStyle.deleteButton, { backgroundColor: color }]}
+      >
+        <Text style={rightActionsStyle.deleteButtonText}>{text}</Text>
       </TouchableOpacity>
-    </Animated.View>
+    </Reanimated.View>
   );
 };
 const rightActionsStyle = StyleSheet.create({
   deleteButton: {
-    width: 120,
-    backgroundColor: '#b60000',
-    flexDirection: 'row',
+    width: 100,
     alignItems: 'center',
     justifyContent: 'center',
     height: '100%',

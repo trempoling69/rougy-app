@@ -84,7 +84,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     const newArray = [...items];
     const element = newArray.find((item) => item.priceId === itemPriceId);
     if (element) {
-      element.quantity = JSON.stringify(parseInt(element.quantity, 10) + value);
+      const newValue = parseInt(element.quantity, 10) + value;
+      element.quantity = JSON.stringify(newValue);
     }
     setItems(newArray);
   };

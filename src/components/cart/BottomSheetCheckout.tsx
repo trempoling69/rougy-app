@@ -2,11 +2,15 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import CustomBottomSheet from '../BottomSheet';
 import { useCartContext } from '../../context/cartContext';
 import { theme } from '../../core/theme';
+import { useRef } from 'react';
+import BottomSheet from '@gorhom/bottom-sheet';
 
 const BottomSheetCheckout = () => {
   const { total, validateCart, validateCartError, validateCartLoading } = useCartContext();
+  const modalRef = useRef<BottomSheet>(null);
+
   return (
-    <CustomBottomSheet title={`Total : ${total}€`} indicatorStyle={{ backgroundColor: 'transparent' }}>
+    <CustomBottomSheet title={`Total : ${total}€`} indicatorStyle={{ backgroundColor: 'transparent' }} ref={modalRef}>
       <View style={styles.modalContainer}>
         {validateCartError && <Text style={styles.textError}>Une erreur est survenue :(</Text>}
         <Pressable style={styles.modalButtonContainer} onPress={validateCart} disabled={validateCartLoading}>

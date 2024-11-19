@@ -1,8 +1,9 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Item, useCartContext } from '../../context/cartContext';
-import { Swipeable, TouchableOpacity } from 'react-native-gesture-handler';
 import { theme } from '../../core/theme';
 import RenderRightActions from '../ListActions/RenderRightActions';
+import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
+import { Pressable } from 'react-native-gesture-handler';
 
 const ItemCard = ({ item }: { item: Item }) => {
   const { addQuantityToItem, removeQuantityToItem, handleRemoveItemToCart } = useCartContext();
@@ -12,7 +13,18 @@ const ItemCard = ({ item }: { item: Item }) => {
   };
   return (
     <Swipeable
-      renderRightActions={() => <RenderRightActions handleOnPress={() => handleRemoveItemToCart(item.priceId)} />}
+      rightThreshold={40}
+      leftThreshold={40}
+      renderRightActions={(_, drag) => (
+        <RenderRightActions
+          index={1}
+          text="Supprimer"
+          color="#b60000"
+          drag={drag}
+          handleOnPress={() => handleRemoveItemToCart(item.priceId)}
+        />
+      )}
+      containerStyle={{ width: '100%' }}
     >
       <View style={styles.cardItem}>
         <View style={styles.containerItem}>

@@ -24,11 +24,11 @@ export default function AppLayout() {
   return (
     <Tabs>
       <Tabs.Screen
-        name="index"
+        name="Price"
         options={{
           tabBarLabel: 'Caisse',
           tabBarIcon: ({ color, size }) => <Ionicons name="flower" color={color} size={size} />,
-          headerTitle: 'Les prix',
+          headerShown: false,
         }}
       />
       <Tabs.Screen
@@ -55,6 +55,12 @@ export default function AppLayout() {
           tabBarLabel: 'Mon Compte',
           tabBarIcon: ({ color, size }) => <Ionicons name="happy" color={color} size={size} />,
           headerTitle: 'Mon compte',
+        }}
+      />
+      <Tabs.Screen
+        name="index"
+        options={{
+          href: null
         }}
       />
     </Tabs>

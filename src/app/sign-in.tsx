@@ -32,7 +32,7 @@ export default function SignIn() {
 
   useEffect(() => {
     if (isLoggedIn) {
-      router.replace('/');
+      router.replace('/Price');
     }
   }, [isLoggedIn]);
   return (

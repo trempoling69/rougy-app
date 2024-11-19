@@ -74,9 +74,10 @@ export function SessionProvider(props: React.PropsWithChildren) {
             }
           }
         },
-        signOut: () => {
-          setIsLoggedIn(false);
+        signOut: async () => {
+          await axios.post(`${API_URL}/api/auth/clear-auth-cookie`, {}, { withCredentials: true });
           SecureStore.deleteItemAsync('token');
+          setIsLoggedIn(false);
         },
         isError,
         errorMessage,
