@@ -17,8 +17,6 @@ const CartCard = memo(
       fetchData();
     };
     const handleResumeCart = async () => {
-      console.log('trigger');
-
       retrieveCart(cart.products, cart.total, cart.id);
     };
 

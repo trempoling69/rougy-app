@@ -35,14 +35,12 @@ const Scan = () => {
   const handleGetScannedPrice = async (id: string) => {
     if (isProcessing.current) return;
     isProcessing.current = true;
-    console.log('pass');
     try {
       let priceScanned = null;
       const findIndexInBasicPrice = prices.findIndex((price) => price.id === id);
       if (findIndexInBasicPrice !== -1) {
         priceScanned = prices[findIndexInBasicPrice];
         setScannedPrice(priceScanned);
-        console.log('known price', priceScanned);
         router.back();
         return;
       }
@@ -52,7 +50,6 @@ const Scan = () => {
     } catch (err) {
       setScanError(true);
       router.back();
-      console.log('errOOOr');
     } finally {
       setProcessingAfterTimeout();
     }

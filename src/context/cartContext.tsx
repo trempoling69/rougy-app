@@ -110,7 +110,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       setValidateCartLoading(true);
       setValidateCartError(false);
       if (idUpdated !== null) {
-        console.log(items);
         await patch<string, { products: Item[]; total: number }>(`/api/cart/${idUpdated}`, {
           products: items,
           total,

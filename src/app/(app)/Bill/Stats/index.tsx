@@ -36,6 +36,7 @@ const index = () => {
     label: `${stat.hour}H`,
     date: stat.date,
   }));
+
   return (
     <View
       style={{
@@ -43,63 +44,78 @@ const index = () => {
         backgroundColor: '#fff',
         height: '100%',
         justifyContent: 'center',
+        paddingTop: 50,
       }}
     >
-      <LineChart
-        curved
-        isAnimated
-        areaChart
-        data={data}
-        hideDataPoints
-        spacing={50}
-        width={350}
-        color={theme.colors.violet}
-        thickness={5}
-        startFillColor={theme.colors.violet}
-        endFillColor={theme.colors.violet}
-        startOpacity={0.5}
-        endOpacity={0.2}
-        initialSpacing={5}
-        noOfSections={3}
-        yAxisColor="white"
-        yAxisThickness={10}
-        xAxisThickness={5}
-        rulesType="solid"
-        rulesColor="gray"
-        xAxisColor="white"
-        pointerConfig={{
-          pointerStripHeight: 160,
-          pointerStripColor: 'lightgray',
-          pointerStripWidth: 2,
-          pointerColor: 'lightgray',
-          radius: 6,
-          pointerLabelWidth: 100,
-          pointerLabelHeight: 90,
-          activatePointersOnLongPress: true,
-          autoAdjustPointerLabelPosition: false,
-          pointerLabelComponent: (items: { value: string; label: string; date: string }[]) => {
-            return (
-              <View
-                style={{
-                  height: 90,
-                  width: 100,
-                  justifyContent: 'center',
-                  marginTop: -30,
-                  marginLeft: -40,
-                }}
-              >
-                <Text style={{ color: 'white', fontSize: 14, marginBottom: 6, textAlign: 'center' }}>
-                  {items[0].date}
-                </Text>
-
-                <View style={{ paddingHorizontal: 14, paddingVertical: 6, borderRadius: 16, backgroundColor: 'white' }}>
-                  <Text style={{ fontWeight: 'bold', textAlign: 'center' }}>{'€' + items[0].value}</Text>
-                </View>
-              </View>
-            );
-          },
+      <View
+        style={{
+          paddingVertical: 30,
         }}
-      />
+      >
+        <LineChart
+          curved
+          areaChart
+          data={data ? data : []}
+          hideDataPoints
+          spacing={50}
+          width={350}
+          height={250}
+          color={theme.colors.violet}
+          thickness={4}
+          startFillColor={theme.colors.violet}
+          endFillColor={theme.colors.violet}
+          startOpacity={0.5}
+          endOpacity={0.2}
+          initialSpacing={0}
+          noOfSections={3}
+          yAxisColor="black"
+          xAxisColor="black"
+          yAxisThickness={1}
+          xAxisThickness={1}
+          rulesType="solid"
+          rulesColor="gray"
+          pointerConfig={{
+            pointerStripColor: 'lightgray',
+            pointerStripWidth: 2,
+            pointerColor: 'lightgray',
+            radius: 6,
+            pointerLabelWidth: 100,
+            pointerLabelHeight: 120,
+            activatePointersOnLongPress: true,
+            autoAdjustPointerLabelPosition: false,
+            pointerLabelComponent: (items: { value: string; label: string; date: string }[]) => {
+              const item = items?.[0];
+              return (
+                <View
+                  style={{
+                    height: 120,
+                    width: 100,
+                    paddingLeft: 16,
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Text style={{ color: 'black', fontSize: 14, marginBottom: 6, textAlign: 'center' }}>
+                    {item ? item.label : 'N/D'}{' '}
+                  </Text>
+
+                  <View
+                    style={{
+                      paddingHorizontal: 14,
+                      paddingVertical: 6,
+                      borderRadius: 16,
+                      backgroundColor: theme.colors.violet,
+                    }}
+                  >
+                    <Text style={{ fontWeight: 'bold', textAlign: 'center', color: theme.colors.white }}>
+                      {item ? `€${item.value}` : '€0'}
+                    </Text>
+                  </View>
+                </View>
+              );
+            },
+          }}
+        />
+      </View>
       <View style={styles.containerStats}>
         <View style={styles.boxStats}>
           <Text style={styles.titleBoxStats}>Total journée</Text>
@@ -109,6 +125,10 @@ const index = () => {
           <Text style={styles.titleBoxStats}>Compte moyen</Text>
           <Text style={styles.valueBoxStats}>{getRoundNumber(otherStats.sum / otherStats.count)}€</Text>
         </View>
+        <View style={styles.boxStats}>
+          <Text style={styles.titleBoxStats}>Nombre compte</Text>
+          <Text style={styles.valueBoxStats}>{getRoundNumber(otherStats.count)}</Text>
+        </View>
       </View>
     </View>
   );
@@ -117,6 +137,8 @@ const index = () => {
 const styles = StyleSheet.create({
   containerStats: {
     marginTop: 50,
+    flexWrap: 'wrap',
+    gap: 10,
     flexDirection: 'row',
     width: '100%',
     justifyContent: 'space-around',

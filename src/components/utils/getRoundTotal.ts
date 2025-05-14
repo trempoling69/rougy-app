@@ -8,6 +8,9 @@ export const getRoundNumber = (number: string | number) => {
   if (typeof number === 'string') {
     total = parseFloat(number);
   } else {
+    if (isNaN(number)) {
+      return 0;
+    }
     total = number;
   }
   return Math.round((total + Number.EPSILON) * 100) / 100;

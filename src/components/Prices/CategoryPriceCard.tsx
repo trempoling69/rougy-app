@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text } from 'react-native';
 import { CategoryPrice } from '../../type/basic';
 import { theme } from '../../core/theme';
 
@@ -9,14 +9,12 @@ type Props = {
 };
 const CategoryPriceCard = ({ category, handleClickCategoryCard, isSelected }: Props) => {
   return (
-    <View>
-      <Pressable
-        style={isSelected ? styles.cardSelected : styles.card}
-        onPress={() => handleClickCategoryCard(category.id)}
-      >
-        <Text style={isSelected ? styles.textInCardSelected : styles.textInCard}>{category.name}</Text>
-      </Pressable>
-    </View>
+    <Pressable
+      style={isSelected ? styles.cardSelected : styles.card}
+      onPress={() => handleClickCategoryCard(category.id)}
+    >
+      <Text style={isSelected ? styles.textInCardSelected : styles.textInCard}>{category.name}</Text>
+    </Pressable>
   );
 };
 const styles = StyleSheet.create({
@@ -42,11 +40,13 @@ const styles = StyleSheet.create({
     color: theme.colors.chocolat,
     fontSize: 15,
     fontWeight: '800',
+    textAlign: 'center',
   },
   textInCardSelected: {
     color: theme.colors.white,
     fontSize: 15,
     fontWeight: '800',
+    textAlign: 'center',
   },
 });
 export default CategoryPriceCard;
