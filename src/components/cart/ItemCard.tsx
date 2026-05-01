@@ -1,15 +1,18 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Item, useCartContext } from '../../context/cartContext';
 import { theme } from '../../core/theme';
 import RenderRightActions from '../ListActions/RenderRightActions';
 import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
+import { Item, useCartStore } from '../../store/cart.store';
+import { calculatePrice } from '../utils/priceCalculation';
 
 const ItemCard = ({ item }: { item: Item }) => {
-  const { addQuantityToItem, removeQuantityToItem, handleRemoveItemToCart } = useCartContext();
+  const addQuantityToItem = useCartStore((state) => state.addQuantityToItem);
+  const removeQuantityToItem = useCartStore((state) => state.removeQuantityToItem);
+  const handleRemoveItemToCart = useCartStore((state) => state.handleRemoveItemToCart);
   const getTotalItem = () => {
-    const total = parseInt(item.quantity) * parseFloat(item.unitPrice);
-    return Math.round((total + Number.EPSILON) * 100) / 100;
+    return calculatePrice(item.quantity, item.unitPrice);
   };
+
   return (
     <Swipeable
       rightThreshold={40}
@@ -28,7 +31,9 @@ const ItemCard = ({ item }: { item: Item }) => {
       <View style={styles.cardItem}>
         <View style={styles.containerItem}>
           <View>
-            <Text style={styles.itemNameText}>{item.name}</Text>
+            <Text style={styles.itemNameText} numberOfLines={2} lineBreakMode="tail">
+              {item.name}
+            </Text>
             <Text style={styles.itemUnitPriceText}>{item.unitPrice}€</Text>
           </View>
           <Text style={styles.totalText}>{getTotalItem() + '€'}</Text>
@@ -51,13 +56,16 @@ const styles = StyleSheet.create({
     width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
+    paddingHorizontal: 15,
     paddingLeft: 5,
     backgroundColor: '#fff',
     minHeight: 150,
   },
   containerItem: {
-    gap: 30,
+    flex: 1,
+    gap: 20,
+    paddingRight: 15,
   },
   itemNameText: {
     fontWeight: '800',
@@ -65,6 +73,7 @@ const styles = StyleSheet.create({
   },
   itemUnitPriceText: {
     fontSize: 18,
+    marginTop: 5,
   },
   totalText: {
     fontSize: 20,
@@ -90,6 +99,7 @@ const styles = StyleSheet.create({
   },
   buttonAdjustQuantityText: {
     fontSize: 25,
+    lineHeight: 28,
     color: theme.colors.chocolat,
   },
 });

@@ -1,24 +1,29 @@
+// import 'react-native-gesture-handler';
+// import 'react-native-reanimated';
+
 import { Slot } from 'expo-router';
 import { SessionProvider } from '../context/ctx';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-import { CartProvider } from '../context/cartContext';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StyleSheet } from 'react-native';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient();
 
 export default function Root() {
   // Set up the auth context and render our layout inside of it.
   return (
-    <GestureHandlerRootView style={styles.container}>
-      <KeyboardProvider>
-        <SessionProvider>
-          <CartProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <QueryClientProvider client={queryClient}>
+        <KeyboardProvider>
+          <SessionProvider>
             <BottomSheetModalProvider>
               <Slot screenOptions={{ color: 'red' }} />
             </BottomSheetModalProvider>
-          </CartProvider>
-        </SessionProvider>
-      </KeyboardProvider>
+          </SessionProvider>
+        </KeyboardProvider>
+      </QueryClientProvider>
     </GestureHandlerRootView>
   );
 }

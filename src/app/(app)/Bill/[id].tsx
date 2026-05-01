@@ -1,20 +1,33 @@
 import { useLocalSearchParams } from 'expo-router';
 import { View, Text, StyleSheet, FlatList } from 'react-native';
-import { Bill, useBillContext } from '../../../context/billContext';
-import { useEffect, useState } from 'react';
-import { Item } from '../../../context/cartContext';
+import { useGetOneBillById } from '../../../api/bill/hook/bill.hook';
+import { Item } from '../../../store/cart.store';
+import { calculatePrice } from '../../../components/utils/priceCalculation';
 
 const CountDetail = () => {
-  const [count, setCount] = useState<Bill>();
-  const { id } = useLocalSearchParams();
-  const { bills } = useBillContext();
-  useEffect(() => {
-    setCount(bills.find((bill) => bill.id === id));
-  }, [id]);
+  const { id, start, end } = useLocalSearchParams() as { id: string; start: string; end?: string };
+  const { data: count, isLoading, isError, isSuccess } = useGetOneBillById(id, start, end);
+
   const getTotalItem = (product: Item) => {
-    const total = parseInt(product.quantity) * parseFloat(product.unitPrice);
-    return Math.round((total + Number.EPSILON) * 100) / 100;
+    return calculatePrice(product.quantity, product.unitPrice);
   };
+
+  if (isLoading) {
+    return (
+      <View>
+        <Text>Chargement ....</Text>
+      </View>
+    );
+  }
+
+  if (isError || !isSuccess) {
+    return (
+      <View>
+        <Text>Une erreur est survenue</Text>
+      </View>
+    );
+  }
+
   return (
     <View>
       <Text style={styles.textTotal}>Total : {count?.total}€</Text>

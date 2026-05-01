@@ -1,10 +1,12 @@
-import { BottomSheetFooter, BottomSheetModal, BottomSheetTextInput, useBottomSheetModal } from '@gorhom/bottom-sheet';
-import { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
+import { BottomSheetFooter, BottomSheetModal, BottomSheetTextInput } from '@gorhom/bottom-sheet';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { View, Text, Pressable, StyleSheet, TouchableOpacity } from 'react-native';
 import BottomModal from '../BottomModal';
 import { Controller, useForm } from 'react-hook-form';
-import { Price } from '../../type/basic';
-import { useCartContext } from '../../context/cartContext';
+import { usePriceSheetStore } from '../../store/priceSheet.store';
+import { useGetOnePriceById } from '../../api/price/hook/price.hook';
+import { randomUUID } from 'expo-crypto';
+import { useCartStore } from '../../store/cart.store';
 
 type QuantityData = {
   unitPrice: string;
@@ -12,16 +14,18 @@ type QuantityData = {
   quantity: string;
   name: string;
 };
-type Props = {
-  price?: Price | null;
-  isCustomPrice: boolean;
-  handleCloseSheet: () => void;
-};
-const AddPriceToCartModal = forwardRef<BottomSheetModal, Props>(({ price, isCustomPrice, handleCloseSheet }, ref) => {
-  const { dismiss } = useBottomSheetModal();
-  const { handleAddItemToCart } = useCartContext();
-  const [total, setTotal] = useState(0);
+
+const AddPriceToCartModal = () => {
+  const bottomSheetRef = useRef<BottomSheetModal>(null);
+  const snapPoints = useMemo(() => ['50%', '90%'], []);
+  const handleAddItemToCart = useCartStore((state) => state.handleAddItemToCart);
   const isSubmittingRef = useRef(false);
+  const isPriceSheetOpen = usePriceSheetStore((state) => state.isPriceSheetOpen);
+  const closePriceSheet = usePriceSheetStore((state) => state.closePriceSheet);
+  const priceSheetData = usePriceSheetStore((state) => state.priceSheetData);
+  const priceId = priceSheetData?.priceId;
+  const isCustomPrice = priceId?.startsWith('CUSTOM');
+  const { data: price, isLoading, isError } = useGetOnePriceById(isCustomPrice ? null : (priceId ?? null));
 
   const {
     control,
@@ -29,56 +33,77 @@ const AddPriceToCartModal = forwardRef<BottomSheetModal, Props>(({ price, isCust
     watch,
     setValue,
     formState: { errors },
+    reset,
   } = useForm<QuantityData>({
     defaultValues: {
       quantity: '1',
+      unitPrice: '0',
     },
   });
+
+  useEffect(() => {
+    if (isPriceSheetOpen) {
+      bottomSheetRef.current?.present();
+    } else {
+      bottomSheetRef.current?.dismiss();
+      reset();
+    }
+  }, [isPriceSheetOpen]);
+
+  const handleClose = () => {
+    closePriceSheet();
+  };
 
   const inputValue = watch('quantity');
   const unitPriceValue = watch('unitPrice');
 
-  const handleAddValue = () => {
-    const value = parseInt(inputValue, 10);
-    const newValue = value + 1;
-    setValue('quantity', `${newValue}`);
-  };
+  const total = useMemo(() => {
+    const amountStr = unitPriceValue?.replace(',', '.') || '0';
+    const quantity = parseInt(inputValue || '0', 10);
 
-  const handleReduceValue = () => {
-    const value = parseInt(inputValue, 10);
-    let newValue = 1;
-    if (value > 1) {
-      newValue = value - 1;
-    }
-    setValue('quantity', `${newValue}`);
+    if (isNaN(quantity)) return 0;
+    const unitPriceInCents = Math.round(parseFloat(amountStr) * 100);
+
+    if (isNaN(unitPriceInCents)) return 0;
+
+    const totalInCents = unitPriceInCents * quantity;
+
+    return totalInCents / 100;
+  }, [inputValue, unitPriceValue]);
+
+  const handleQuantityChange = (delta: number) => {
+    const current = parseInt(inputValue || '1', 10);
+    const newValue = Math.max(1, current + delta);
+    setValue('quantity', `${newValue}`, { shouldValidate: true });
   };
 
   const onSubmit = (data: QuantityData) => {
     if (isSubmittingRef.current) return;
     isSubmittingRef.current = true;
     handleAddItemToCart(data);
-    dismiss();
-    setValue('quantity', '1');
+    handleClose();
     setTimeout(() => {
       isSubmittingRef.current = false;
     }, 300);
   };
 
   useEffect(() => {
-    if (price) {
-      setValue('quantity', '1');
-      setValue('priceId', price.id);
-      setValue('unitPrice', `${price.amount}`);
-      setValue('name', price.name);
+    if (isCustomPrice) {
+      reset({
+        quantity: '1',
+        priceId: `CUSTOM_${randomUUID()}`,
+        unitPrice: '0',
+        name: 'Personnalisé',
+      });
+    } else if (price && !isLoading && !isError) {
+      reset({
+        quantity: '1',
+        priceId: price.id,
+        unitPrice: `${price.amount}`,
+        name: price.name,
+      });
     }
-  }, [price]);
-
-  useEffect(() => {
-    const amo = isNaN(parseFloat(unitPriceValue)) ? 0 : parseFloat(unitPriceValue);
-    const quan = isNaN(parseInt(inputValue, 10)) ? 0 : parseInt(inputValue, 10);
-    const tot = Math.round((amo * quan + Number.EPSILON) * 100) / 100;
-    setTotal(tot);
-  }, [inputValue, price, unitPriceValue]);
+  }, [price, isCustomPrice, isLoading, isError, reset]);
 
   const renderFooter = useCallback(
     (props: any) => (
@@ -88,53 +113,61 @@ const AddPriceToCartModal = forwardRef<BottomSheetModal, Props>(({ price, isCust
         </Pressable>
       </BottomSheetFooter>
     ),
-    []
+    [handleSubmit]
   );
 
   return (
-    <BottomModal ref={ref} title="Ajouter au panier" renderFooter={renderFooter} onDismiss={handleCloseSheet}>
+    <BottomModal
+      ref={bottomSheetRef}
+      title="Ajouter au panier"
+      renderFooter={renderFooter}
+      onDismiss={handleClose}
+      snapPoints={snapPoints}
+    >
       <View style={styles.container}>
-        {price ? (
+        {isLoading && <Text>Chargement du prix...</Text>}
+        {!isLoading && !isError && (price || isCustomPrice) ? (
           <>
-            <Text style={styles.textPriceName}>{price.name}</Text>
-            {isCustomPrice ? (
-              <Controller
-                control={control}
-                rules={{
-                  required: true,
-                }}
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <View style={styles.inputUnitPriceContainer}>
-                    <Text style={styles.textPriceAmount}>Prix unitaire :</Text>
-                    <BottomSheetTextInput
-                      onBlur={onBlur}
-                      style={styles.inputUnitPrice}
-                      onChangeText={(text) => {
-                        const sanitizedValue = text.replace(/,/g, '.');
-                        onChange(sanitizedValue);
-                      }}
-                      value={value}
-                      keyboardType="decimal-pad"
-                    />
-                    <Text style={styles.inputUnitPriceText}>€</Text>
-                  </View>
-                )}
-                name="unitPrice"
-              />
+            {price ? (
+              <>
+                <Text style={styles.textPriceName}>{price.name}</Text>
+                <Text style={styles.textPriceAmount}>
+                  Prix unitaire : <Text style={styles.textAmount}>{price.amount}€</Text>
+                </Text>
+              </>
             ) : (
-              <Text style={styles.textPriceAmount}>
-                Prix unitaire : <Text style={styles.textAmount}>{price.amount}€</Text>
-              </Text>
+              <>
+                <Text style={styles.textPriceName}>Personnalisé</Text>
+                <Controller
+                  control={control}
+                  rules={{ required: true }}
+                  name="unitPrice"
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <View style={styles.inputUnitPriceContainer}>
+                      <Text style={styles.textPriceAmount}>Prix unitaire :</Text>
+                      <BottomSheetTextInput
+                        onBlur={onBlur}
+                        style={styles.inputUnitPrice}
+                        onChangeText={(text) => onChange(text.replace(/,/g, '.'))}
+                        value={value}
+                        keyboardType="decimal-pad"
+                      />
+                      <Text style={styles.inputUnitPriceText}>€</Text>
+                    </View>
+                  )}
+                />
+              </>
             )}
+
             <View style={styles.quantityContainer}>
-              <TouchableOpacity style={styles.buttonAdjustQuantity} onPress={handleReduceValue}>
+              <TouchableOpacity style={styles.buttonAdjustQuantity} onPress={() => handleQuantityChange(-1)}>
                 <Text style={styles.buttonAdjustQuantityText}>-</Text>
               </TouchableOpacity>
+
               <Controller
                 control={control}
-                rules={{
-                  required: true,
-                }}
+                rules={{ required: true }}
+                name="quantity"
                 render={({ field: { onChange, onBlur, value } }) => (
                   <BottomSheetTextInput
                     style={styles.input}
@@ -144,24 +177,27 @@ const AddPriceToCartModal = forwardRef<BottomSheetModal, Props>(({ price, isCust
                     keyboardType="number-pad"
                   />
                 )}
-                name="quantity"
               />
-              {errors.quantity && <Text>Quantité requise</Text>}
-              <TouchableOpacity style={styles.buttonAdjustQuantity} onPress={handleAddValue}>
+
+              <TouchableOpacity style={styles.buttonAdjustQuantity} onPress={() => handleQuantityChange(1)}>
                 <Text style={styles.buttonAdjustQuantityText}>+</Text>
               </TouchableOpacity>
             </View>
+
+            {errors.quantity && <Text style={{ color: 'red' }}>Quantité requise</Text>}
+
             <Text style={styles.textTotal}>
               Total: <Text style={styles.textTotalValue}>{total}€</Text>
             </Text>
           </>
         ) : (
-          <Text>Une erreur est survenue</Text>
+          !isLoading && <Text>Une erreur est survenue, Prix introuvable.</Text>
         )}
       </View>
     </BottomModal>
   );
-});
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -197,7 +233,7 @@ const styles = StyleSheet.create({
   },
   inputUnitPrice: {
     textAlign: 'center',
-    width: 70,
+    minWidth: 70,
     borderRadius: 10,
     fontSize: 20,
     padding: 8,

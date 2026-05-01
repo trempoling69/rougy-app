@@ -1,3 +1,5 @@
+import { Item } from "../store/cart.store";
+
 export type Price = {
   id: string;
   name: string;
@@ -9,4 +11,11 @@ export type Price = {
 export type CategoryPrice = {
   id: string;
   name: string;
+};
+
+export type Bill = {
+  id: string;
+  products: Item[];
+  total: number;
+  createdAt: string;
 };

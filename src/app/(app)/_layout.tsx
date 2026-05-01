@@ -3,11 +3,11 @@ import { useAuth } from '../../context/ctx';
 import { Text } from 'react-native';
 import { useEffect } from 'react';
 import { Ionicons } from '@expo/vector-icons';
-import { useCartContext } from '../../context/cartContext';
+import { useCartStore } from '../../store/cart.store';
 
 export default function AppLayout() {
   const { isLoggedIn, verifyLogin } = useAuth();
-  const { items } = useCartContext();
+  const products = useCartStore((state) => state.products);
 
   useEffect(() => {
     verifyLogin();
@@ -29,6 +29,7 @@ export default function AppLayout() {
           tabBarLabel: 'Caisse',
           tabBarIcon: ({ color, size }) => <Ionicons name="flower" color={color} size={size} />,
           headerShown: false,
+          headerTitle: 'Caisse',
         }}
       />
       <Tabs.Screen
@@ -36,7 +37,7 @@ export default function AppLayout() {
         options={{
           tabBarLabel: 'Panier',
           tabBarIcon: ({ color, size }) => <Ionicons name="cart" color={color} size={size} />,
-          tabBarBadge: items.length,
+          tabBarBadge: products.length,
           headerTitle: 'Panier en cours',
         }}
       />
@@ -60,7 +61,7 @@ export default function AppLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          href: null
+          href: null,
         }}
       />
     </Tabs>

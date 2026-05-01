@@ -2,26 +2,29 @@ import RenderRightActions from '../ListActions/RenderRightActions';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { del } from '../../config/api';
 import { router } from 'expo-router';
-import { Bill } from '../../context/billContext';
 import { memo } from 'react';
-import { useCartContext } from '../../context/cartContext';
 import { APP_URL } from '../../config/url';
 import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
+import { useQueryClient } from '@tanstack/react-query';
+import { billQueryKeys } from '../../api/bill/queryKey/bill.key';
+import { Bill } from '../../type/basic';
+import { useCartStore } from '../../store/cart.store';
 
 const CartCard = memo(
-  ({ cart, fetchData }: { cart: Bill; fetchData: () => void }) => {
-    const { retrieveCart } = useCartContext();
+  ({ cart, params }: { cart: Bill; params: { start: string; end?: string } }) => {
+    const queryClient = useQueryClient();
+    const retrieveCart = useCartStore((state) => state.retrieveCart);
 
     const handleDeleteCart = async (id: string) => {
       await del(`/api/cart/${id}`);
-      fetchData();
+      queryClient.invalidateQueries({ queryKey: billQueryKeys.basic });
     };
     const handleResumeCart = async () => {
-      retrieveCart(cart.products, cart.total, cart.id);
+      retrieveCart(cart.products, cart.id);
     };
 
     const viewCart = () => {
-      router.push(APP_URL.BillById(cart.id));
+      router.push({ pathname: APP_URL.BillById(cart.id), params });
     };
     return (
       <Swipeable

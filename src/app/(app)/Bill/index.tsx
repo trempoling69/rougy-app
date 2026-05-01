@@ -1,20 +1,9 @@
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import { SectionList, StyleSheet, View } from 'react-native';
-import { useBillContext } from '../../../context/billContext';
 import ListItem from '../../../components/bill/sectionList/ListItem';
 import SectionHeader from '../../../components/bill/sectionList/SectionHeader';
 
 const index = () => {
-  const { fetchAllBill, bills } = useBillContext();
-  const [refreshing, setRefreshing] = useState(false);
-  const fetch = async () => {
-    await fetchAllBill('2024-03-16');
-  };
-  const onRefresh = useCallback(async () => {
-    setRefreshing(true);
-    await fetchAllBill('2024-03-16');
-    setRefreshing(false);
-  }, []);
   const _keyExtractor = useCallback((item: string, index: number) => {
     return item + index;
   }, []);
@@ -33,6 +22,7 @@ const index = () => {
       data: ['stats journée'],
     },
   ];
+
   return (
     <View style={styles.container}>
       <SectionList

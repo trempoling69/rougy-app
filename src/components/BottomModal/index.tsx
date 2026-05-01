@@ -1,61 +1,51 @@
 import { BottomSheetBackdrop, BottomSheetFooterProps, BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
-import { FC, ReactNode, forwardRef, useCallback, useMemo } from 'react';
-import { Text, StyleSheet, View } from 'react-native';
+import { FC, ReactNode, forwardRef, useCallback } from 'react';
+import { Text, StyleSheet } from 'react-native';
 
 type Props = {
   title: string;
   children: ReactNode;
   renderFooter?: FC<BottomSheetFooterProps>;
   onDismiss?: () => void;
+  snapPoints: string[];
 };
-const BottomModal = forwardRef<BottomSheetModal, Props>(({ title, children, renderFooter, onDismiss }, ref) => {
-  const snapPoints = useMemo(() => ['50%', '90%'], []);
-  const renderBackdrop = useCallback(
-    (props: any) => <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />,
-    []
-  );
+const BottomModal = forwardRef<BottomSheetModal, Props>(
+  ({ title, children, renderFooter, snapPoints, onDismiss }, ref) => {
+    const renderBackdrop = useCallback(
+      (props: any) => <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />,
+      []
+    );
 
-  return (
-    <BottomSheetModal
-      index={0}
-      ref={ref}
-      snapPoints={snapPoints}
-      backdropComponent={renderBackdrop}
-      enablePanDownToClose
-      enableDynamicSizing={false}
-      enableBlurKeyboardOnGesture={true}
-      footerComponent={renderFooter}
-      onDismiss={onDismiss}
-      enableDismissOnClose={false}
-    >
-      <View style={styles.contentSheetContainer}>
-        <Text style={styles.contentSheetHeadline}>{title}</Text>
-        {children}
-      </View>
-    </BottomSheetModal>
-  );
-});
+    return (
+      <BottomSheetModal
+        index={0}
+        ref={ref}
+        snapPoints={snapPoints}
+        backdropComponent={renderBackdrop}
+        enablePanDownToClose={true}
+        enableDynamicSizing={false}
+        footerComponent={renderFooter}
+        onDismiss={onDismiss}
+        keyboardBehavior="interactive"
+      >
+        <BottomSheetView style={styles.contentSheetContainer}>
+          <Text style={styles.contentSheetHeadline}>{title}</Text>
+          {children}
+        </BottomSheetView>
+      </BottomSheetModal>
+    );
+  }
+);
 
 const styles = StyleSheet.create({
   contentSheetContainer: {
-    flex: 1,
+    // flex: 1,
     alignItems: 'center',
     width: '100%',
   },
   contentSheetHeadline: {
     fontSize: 24,
     fontWeight: 'bold',
-  },
-  footerContainer: {
-    padding: 12,
-    margin: 12,
-    borderRadius: 12,
-    backgroundColor: '#80f',
-  },
-  footerText: {
-    textAlign: 'center',
-    color: 'white',
-    fontWeight: '800',
   },
 });
 

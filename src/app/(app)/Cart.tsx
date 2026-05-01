@@ -1,16 +1,16 @@
 import { StyleSheet, View } from 'react-native';
-import { useCartContext } from '../../context/cartContext';
 import { FlatList } from 'react-native-gesture-handler';
 import ItemCard from '../../components/cart/ItemCard';
 import BottomSheetCheckout from '../../components/cart/BottomSheetCheckout';
+import { useCartStore } from '../../store/cart.store';
 
 const Cart = () => {
-  const { items } = useCartContext();
+  const products = useCartStore((state) => state.products);
   return (
     <View style={styles.container}>
       <FlatList
         style={{ width: '100%', maxHeight: '80%' }}
-        data={items}
+        data={products}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
         renderItem={(i) => <ItemCard item={i.item} />}
         keyExtractor={(item) => item.priceId}
