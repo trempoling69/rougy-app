@@ -3,7 +3,6 @@ import { Item, useCartContext } from '../../context/cartContext';
 import { theme } from '../../core/theme';
 import RenderRightActions from '../ListActions/RenderRightActions';
 import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
-import { Pressable } from 'react-native-gesture-handler';
 
 const ItemCard = ({ item }: { item: Item }) => {
   const { addQuantityToItem, removeQuantityToItem, handleRemoveItemToCart } = useCartContext();

@@ -1,9 +1,9 @@
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState, createContext, useContext, PropsWithChildren } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import axios from 'axios';
 import { API_URL, get } from '../config/api';
 type Credential = { username: string; password: string };
-const AuthContext = React.createContext<{
+const AuthContext = createContext<{
   signIn: (value: Credential) => Promise<void>;
   signOut: () => void;
   token?: string | null;
@@ -22,7 +22,7 @@ const AuthContext = React.createContext<{
 });
 
 export function useAuth() {
-  const value = React.useContext(AuthContext);
+  const value = useContext(AuthContext);
   if (process.env.NODE_ENV !== 'production') {
     if (!value) {
       throw new Error('useAuth must be wrapped in a <SessionProvider />');
@@ -32,7 +32,7 @@ export function useAuth() {
   return value;
 }
 
-export function SessionProvider(props: React.PropsWithChildren) {
+export function SessionProvider(props: PropsWithChildren) {
   const [isError, setIsError] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
   const [errorMessage, setErrorMessage] = useState('');

@@ -58,6 +58,7 @@ const AddPriceToCartModal = forwardRef<BottomSheetModal, Props>(({ price, isCust
     isSubmittingRef.current = true;
     handleAddItemToCart(data);
     dismiss();
+    setValue('quantity', '1');
     setTimeout(() => {
       isSubmittingRef.current = false;
     }, 300);

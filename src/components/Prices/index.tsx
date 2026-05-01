@@ -20,7 +20,7 @@ const Prices = () => {
     bottomSheetRef.current?.present();
   };
   const handleCloseSheet = () => {
-    bottomSheetRef.current?.dismiss();
+    // bottomSheetRef.current?.dismiss();
     setSelectedPrice(null);
     if (scannedPrice) {
       setScannedPrice(null);

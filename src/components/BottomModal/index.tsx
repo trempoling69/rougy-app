@@ -1,6 +1,6 @@
 import { BottomSheetBackdrop, BottomSheetFooterProps, BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
 import { FC, ReactNode, forwardRef, useCallback, useMemo } from 'react';
-import { Text, StyleSheet } from 'react-native';
+import { Text, StyleSheet, View } from 'react-native';
 
 type Props = {
   title: string;
@@ -23,14 +23,15 @@ const BottomModal = forwardRef<BottomSheetModal, Props>(({ title, children, rend
       backdropComponent={renderBackdrop}
       enablePanDownToClose
       enableDynamicSizing={false}
-      keyboardBehavior="interactive"
+      enableBlurKeyboardOnGesture={true}
       footerComponent={renderFooter}
       onDismiss={onDismiss}
+      enableDismissOnClose={false}
     >
-      <BottomSheetView style={styles.contentSheetContainer}>
+      <View style={styles.contentSheetContainer}>
         <Text style={styles.contentSheetHeadline}>{title}</Text>
         {children}
-      </BottomSheetView>
+      </View>
     </BottomSheetModal>
   );
 });

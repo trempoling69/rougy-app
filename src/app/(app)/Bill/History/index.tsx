@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { FlatList, RefreshControl } from 'react-native-gesture-handler';
+import { StyleSheet, Text, View, FlatList, RefreshControl } from 'react-native';
 import CartCard from '../../../../components/bill/CartCard';
 import { Bill, useBillContext } from '../../../../context/billContext';
 import { useLocalSearchParams } from 'expo-router';
@@ -59,4 +58,5 @@ const styles = StyleSheet.create({
     height: StyleSheet.hairlineWidth,
   },
 });
+
 export default History;

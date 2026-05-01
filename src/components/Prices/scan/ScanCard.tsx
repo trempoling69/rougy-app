@@ -1,5 +1,4 @@
-import { StyleSheet, Text } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { useCameraPermissions } from 'expo-camera';
 import { router } from 'expo-router';
 import { APP_URL } from '../../../config/url';
@@ -17,7 +16,7 @@ const ScanCard = () => {
     requestPermission();
   };
   return (
-    <TouchableOpacity containerStyle={{ width: '45%' }} style={styles.cardPriceContainer} onPress={handleCamera}>
+    <TouchableOpacity style={styles.cardPriceContainer} onPress={handleCamera}>
       <Text style={styles.textName}>Scanner</Text>
       <Text style={styles.textAmount}>.. €</Text>
     </TouchableOpacity>
@@ -31,7 +30,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'white',
     borderRadius: 15,
-    width: '100%',
+    width: '45%',
     height: 130,
   },
   textName: {
